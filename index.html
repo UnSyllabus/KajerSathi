@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>কাজের সাথী — লোকাল ওয়ার্কার ফাইন্ডার</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --orange: #f97316;
+    --orange-dark: #ea580c;
+    --orange-deeper: #c2410c;
+    --orange-light: #fff7ed;
+    --orange-mid: #ffedd5;
+    --blue: #1d4ed8;
+    --blue-light: #eff6ff;
+    --text: #1c1917;
+    --text-mid: #44403c;
+    --text-muted: #78716c;
+    --border: #e7e5e4;
+    --white: #ffffff;
+    --bg: #fafaf9;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0 1.5rem;
+  }
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .logo {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: var(--orange);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo span { color: var(--text); }
+  .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-mid);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--orange); }
+  .btn-login {
+    background: var(--orange-light);
+    color: var(--orange-deeper);
+    border: 1px solid var(--orange-mid);
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn-login:hover { background: var(--orange-mid); }
+  .btn-primary {
+    background: var(--orange);
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover { background: var(--orange-dark); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fed7aa 100%);
+    padding: 5rem 1.5rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, #f97316 0%, transparent 70%);
+    opacity: 0.08;
+    border-radius: 50%;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--orange);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 99px;
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.15;
+    max-width: 720px;
+    margin: 0 auto 1rem;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--orange);
+  }
+  .hero p {
+    font-size: 1.1rem;
+    color: var(--text-mid);
+    max-width: 540px;
+    margin: 0 auto 2.5rem;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-hero {
+    background: var(--orange);
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(249,115,22,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-hero:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(249,115,22,0.4); }
+  .btn-hero-outline {
+    background: white;
+    color: var(--orange-deeper);
+    border: 2px solid var(--orange);
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn-hero-outline:hover { background: var(--orange-light); }
+
+  /* STATS */
+  .stats {
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+  }
+  .stats-grid {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 2rem;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--orange);
+  }
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* SEARCH */
+  .search-section {
+    padding: 3rem 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .search-section h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .search-box {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .search-box select,
+  .search-box input {
+    flex: 1;
+    min-width: 150px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    outline: none;
+  }
+  .search-box select:focus,
+  .search-box input:focus { border-color: var(--orange); }
+  .search-box button {
+    background: var(--orange);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .search-box button:hover { background: var(--orange-dark); }
+
+  /* CATEGORIES */
+  .categories {
+    padding: 3rem 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .section-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .section-sub {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 1rem;
+  }
+  .cat-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    text-decoration: none;
+    display: block;
+  }
+  .cat-card:hover {
+    border-color: var(--orange);
+    box-shadow: 0 4px 12px rgba(249,115,22,0.12);
+    transform: translateY(-2px);
+  }
+  .cat-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .cat-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-mid);
+  }
+  .cat-count {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* WORKERS */
+  .workers-section {
+    padding: 3rem 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .view-all {
+    color: var(--orange);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .workers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+  .worker-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    transition: box-shadow 0.2s, transform 0.15s;
+    cursor: pointer;
+  }
+  .worker-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .worker-top { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 1rem; }
+  .worker-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--orange-light);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--orange-deeper);
+    flex-shrink: 0;
+  }
+  .worker-info { flex: 1; }
+  .worker-name { font-weight: 600; font-size: 1rem; }
+  .worker-job { font-size: 0.8rem; color: var(--text-muted); }
+  .worker-verified {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: #dcfce7; color: #15803d;
+    font-size: 0.7rem; font-weight: 600;
+    padding: 2px 8px; border-radius: 99px;
+    margin-top: 3px;
+  }
+  .worker-rating {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 0.85rem; margin-bottom: 0.5rem;
+  }
+  .stars { color: #f59e0b; }
+  .rating-count { color: var(--text-muted); font-size: 0.8rem; }
+  .worker-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+  .tag {
+    background: var(--orange-light);
+    color: var(--orange-deeper);
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 99px;
+    border: 1px solid var(--orange-mid);
+  }
+  .worker-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+  }
+  .worker-rate { font-weight: 700; color: var(--orange-deeper); font-size: 0.95rem; }
+  .worker-location { font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 3px; }
+  .btn-hire {
+    background: var(--orange);
+    color: white;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 7px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-hire:hover { background: var(--orange-dark); }
+
+  /* HOW IT WORKS */
+  .how-section {
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 4rem 1.5rem;
+  }
+  .how-inner { max-width: 1000px; margin: 0 auto; }
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-top: 2.5rem;
+  }
+  .how-step { text-align: center; }
+  .step-num {
+    width: 52px; height: 52px;
+    background: var(--orange);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0 auto 1rem;
+  }
+  .how-step h3 { font-weight: 600; font-size: 1rem; margin-bottom: 0.4rem; }
+  .how-step p { font-size: 0.875rem; color: var(--text-muted); }
+
+  /* OTP LOGIN DEMO */
+  .login-section {
+    padding: 4rem 1.5rem;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .login-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    text-align: center;
+  }
+  .login-card h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .login-card p { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.5rem; }
+  .phone-input-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+  .country-code {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    width: 60px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .phone-input {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .phone-input:focus { border-color: var(--orange); }
+  .otp-row {
+    display: flex; gap: 8px; justify-content: center; margin-bottom: 1rem;
+  }
+  .otp-box {
+    width: 44px; height: 48px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+    color: var(--text);
+  }
+  .otp-box:focus { border-color: var(--orange); }
+  .btn-full {
+    width: 100%;
+    background: var(--orange);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.2s;
+    margin-bottom: 1rem;
+  }
+  .btn-full:hover { background: var(--orange-dark); }
+  .login-divider { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.75rem; }
+  .tabs {
+    display: flex;
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 1.5rem;
+    gap: 2px;
+  }
+  .tab {
+    flex: 1;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    transition: background 0.2s, color 0.2s;
+  }
+  .tab.active {
+    background: var(--white);
+    color: var(--orange-deeper);
+    box-shadow: var(--shadow);
+  }
+
+  /* TESTIMONIALS */
+  .testimonials {
+    padding: 4rem 1.5rem;
+    background: var(--orange-light);
+    border-top: 1px solid var(--orange-mid);
+    border-bottom: 1px solid var(--orange-mid);
+  }
+  .test-inner { max-width: 1100px; margin: 0 auto; }
+  .test-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+  .test-card {
+    background: var(--white);
+    border: 1px solid var(--orange-mid);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+  }
+  .test-stars { color: #f59e0b; font-size: 0.9rem; margin-bottom: 0.75rem; }
+  .test-text { font-size: 0.9rem; color: var(--text-mid); line-height: 1.7; margin-bottom: 1rem; font-style: italic; }
+  .test-author { display: flex; align-items: center; gap: 10px; }
+  .test-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--orange-mid);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem;
+    color: var(--orange-deeper);
+    flex-shrink: 0;
+  }
+  .test-name { font-weight: 600; font-size: 0.85rem; }
+  .test-loc { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* CTA */
+  .cta-section {
+    padding: 5rem 1.5rem;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .cta-section h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+  }
+  .cta-section h2 em { font-style: normal; color: var(--orange); }
+  .cta-section p { color: var(--text-muted); margin-bottom: 2rem; }
+  .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+  /* FOOTER */
+  footer {
+    background: var(--text);
+    color: #d6d3d1;
+    padding: 3rem 1.5rem 2rem;
+  }
+  .footer-grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  .footer-brand .logo { color: var(--orange); font-size: 1.2rem; }
+  .footer-brand p { font-size: 0.85rem; color: #a8a29e; margin-top: 0.75rem; line-height: 1.7; }
+  .footer-col h4 { font-weight: 600; font-size: 0.875rem; color: white; margin-bottom: 1rem; }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 0.5rem; }
+  .footer-col a { color: #a8a29e; text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--orange); }
+  .footer-bottom {
+    border-top: 1px solid #44403c;
+    padding-top: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    color: #78716c;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .nav-links { display: none; }
+    .how-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .footer-grid { grid-template-columns: 1fr; }
+    .how-grid { grid-template-columns: 1fr; }
+  }
+
+  /* HIDDEN OTP STEP */
+  #otp-step { display: none; }
+  #otp-step.show { display: block; }
+  #phone-step.hide { display: none; }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="#">🔧 <span>কাজের</span>সাথী</a>
+    <div class="nav-links">
+      <a href="#categories">সব কাজ</a>
+      <a href="#workers">কর্মীরা</a>
+      <a href="#how">কিভাবে কাজ করে</a>
+      <a href="#login">রেজিস্ট্রেশন</a>
+      <a href="#login" class="btn-login">লগইন</a>
+      <a href="#workers" class="btn-primary">কর্মী খুঁজুন</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🇮🇳 ভারতে ১০,০০০+ কর্মী</div>
+  <h1>বিশ্বস্ত <em>লোকাল কর্মী</em> খুঁজুন মাত্র কয়েক মিনিটে</h1>
+  <p>প্লাম্বার, ইলেকট্রিশিয়ান, মিস্ত্রি — আপনার কাছের যে কোনো দক্ষ কর্মী এখন আপনার হাতের মুঠোয়। OTP দিয়ে সহজে লগইন করুন।</p>
+  <div class="hero-actions">
+    <a href="#workers" class="btn-hero">এখনই কর্মী খুঁজুন →</a>
+    <a href="#login" class="btn-hero-outline">কর্মী হিসেবে যোগ দিন</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stats-grid">
+    <div>
+      <div class="stat-num">১০,০০০+</div>
+      <div class="stat-label">যাচাইকৃত কর্মী</div>
+    </div>
+    <div>
+      <div class="stat-num">৫০+</div>
+      <div class="stat-label">শহর জুড়ে পরিষেবা</div>
+    </div>
+    <div>
+      <div class="stat-num">৯৮%</div>
+      <div class="stat-label">সন্তুষ্ট গ্রাহক</div>
+    </div>
+    <div>
+      <div class="stat-num">৪.৮ ★</div>
+      <div class="stat-label">গড় রেটিং</div>
+    </div>
+  </div>
+</section>
+
+<!-- SEARCH -->
+<section class="search-section">
+  <h2>কাজের ধরন ও এলাকা বেছে নিন</h2>
+  <div class="search-box">
+    <select>
+      <option>কাজের ধরন বেছে নিন</option>
+      <option>প্লাম্বার</option>
+      <option>ইলেকট্রিশিয়ান</option>
+      <option>কার্পেন্টার</option>
+      <option>পেইন্টার</option>
+      <option>মেকানিক</option>
+      <option>ক্লিনার</option>
+      <option>গৃহশিক্ষক</option>
+      <option>রান্নাঘর সহায়ক</option>
+    </select>
+    <input type="text" placeholder="আপনার এলাকা লিখুন... যেমন: ঢাকা, কলকাতা">
+    <button>🔍 খুঁজুন</button>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="categories" id="categories">
+  <div class="section-title">সব ধরনের পরিষেবা</div>
+  <div class="section-sub">আপনার প্রয়োজনমতো কাজের ক্যাটাগরি বেছে নিন</div>
+  <div class="cat-grid">
+    <a href="#workers" class="cat-card"><span class="cat-icon">🔧</span><div class="cat-name">প্লাম্বার</div><div class="cat-count">১,২৪০ জন</div></a>
+    <a href="#workers" class="cat-card"><span class="cat-icon">⚡</span><div class="cat-name">ইলেকট্রিশিয়ান</div><div class="cat-count">৯৮০ জন</div></a>
+    <a href="#workers" class="cat-card"><span class="cat-icon">🪚</span><div class="cat-name">কার্পেন্টার</div><div class="cat-count">৭৬০ জন</div></a>
+    <a href="#workers" class="cat-card"><span class="cat-icon">🎨</span><div class="cat-name">পেইন্টার</div><div class="cat-count">৫৪০ জন</div></a>
+    <a href="#workers" class="cat-card"><span class="cat-icon">🚗</span><div class="cat-name">মেকানিক</div><div class="cat-count">৪৩০ জন</div></a>
+    <a href="#workers" class="cat-card"><span class="cat-icon">🧹</span><div class="cat-name">ক্লিনার</div><div class="cat-count">৮৯০ জন</div></a>
+    <a href="#workers" class="cat-card"><span class="cat-icon">📚</span><div class="cat-name">গৃহশিক্ষক</div><div class="cat-count">২,১৫০ জন</div></a>
+    <a href="#workers" class="cat-card"><span class="cat-icon">🍳</span><div class="cat-name">রাঁধুনি</div><div class="cat-count">৩৮০ জন</div></a>
+    <a href="#workers" class="cat-card"><span class="cat-icon">🏗️</span><div class="cat-name">মিস্ত্রি</div><div class="cat-count">৬৭০ জন</div></a>
+    <a href="#workers" class="cat-card"><span class="cat-icon">🌿</span><div class="cat-name">মালি</div><div class="cat-count">২৯০ জন</div></a>
+    <a href="#workers" class="cat-card"><span class="cat-icon">📱</span><div class="cat-name">ফোন মেরামত</div><div class="cat-count">৫১০ জন</div></a>
+    <a href="#workers" class="cat-card"><span class="cat-icon">🚚</span><div class="cat-name">পরিবহন</div><div class="cat-count">৩২০ জন</div></a>
+  </div>
+</section>
+
+<!-- WORKERS -->
+<section class="workers-section" id="workers">
+  <div class="section-header">
+    <div>
+      <div class="section-title">কাছের কর্মীরা</div>
+      <div class="section-sub">আপনার এলাকার যাচাইকৃত এবং রেটেড কর্মীরা</div>
+    </div>
+    <a href="#" class="view-all">সব দেখুন →</a>
+  </div>
+  <div class="workers-grid">
+
+    <!-- Worker 1 -->
+    <div class="worker-card">
+      <div class="worker-top">
+        <div class="worker-avatar">রা</div>
+        <div class="worker-info">
+          <div class="worker-name">রামেশ্বর দাস</div>
+          <div class="worker-job">প্লাম্বার · ৮ বছরের অভিজ্ঞতা</div>
+          <span class="worker-verified">✓ যাচাইকৃত</span>
+        </div>
+      </div>
+      <div class="worker-rating">
+        <span class="stars">★★★★★</span>
+        <strong>4.9</strong>
+        <span class="rating-count">(১৩৪ রিভিউ)</span>
+      </div>
+      <div class="worker-tags">
+        <span class="tag">পাইপ মেরামত</span>
+        <span class="tag">বাথরুম ফিটিং</span>
+        <span class="tag">লিক ঠিক</span>
+      </div>
+      <div class="worker-footer">
+        <div>
+          <div class="worker-rate">₹৩৫০/ঘণ্টা</div>
+          <div class="worker-location">📍 যোধপুর, রাজস্থান</div>
+        </div>
+        <button class="btn-hire" onclick="alert('রামেশ্বর দাসকে হায়ার করার জন্য প্রথমে লগইন করুন')">হায়ার করুন</button>
+      </div>
+    </div>
+
+    <!-- Worker 2 -->
+    <div class="worker-card">
+      <div class="worker-top">
+        <div class="worker-avatar" style="background:#eff6ff;color:#1d4ed8;">সু</div>
+        <div class="worker-info">
+          <div class="worker-name">সুরেশ কুমার</div>
+          <div class="worker-job">ইলেকট্রিশিয়ান · ১২ বছরের অভিজ্ঞতা</div>
+          <span class="worker-verified">✓ যাচাইকৃত</span>
+        </div>
+      </div>
+      <div class="worker-rating">
+        <span class="stars">★★★★★</span>
+        <strong>4.8</strong>
+        <span class="rating-count">(২০৭ রিভিউ)</span>
+      </div>
+      <div class="worker-tags">
+        <span class="tag">ওয়্যারিং</span>
+        <span class="tag">AC ইন্সটল</span>
+        <span class="tag">সুইচবোর্ড</span>
+      </div>
+      <div class="worker-footer">
+        <div>
+          <div class="worker-rate">₹৪০০/ঘণ্টা</div>
+          <div class="worker-location">📍 জয়পুর, রাজস্থান</div>
+        </div>
+        <button class="btn-hire" onclick="alert('সুরেশ কুমারকে হায়ার করার জন্য প্রথমে লগইন করুন')">হায়ার করুন</button>
+      </div>
+    </div>
+
+    <!-- Worker 3 -->
+    <div class="worker-card">
+      <div class="worker-top">
+        <div class="worker-avatar" style="background:#f0fdf4;color:#15803d;">প্র</div>
+        <div class="worker-info">
+          <div class="worker-name">প্রিয়া শর্মা</div>
+          <div class="worker-job">গৃহশিক্ষিকা · ৫ বছরের অভিজ্ঞতা</div>
+          <span class="worker-verified">✓ যাচাইকৃত</span>
+        </div>
+      </div>
+      <div class="worker-rating">
+        <span class="stars">★★★★★</span>
+        <strong>5.0</strong>
+        <span class="rating-count">(৮৯ রিভিউ)</span>
+      </div>
+      <div class="worker-tags">
+        <span class="tag">গণিত</span>
+        <span class="tag">বিজ্ঞান</span>
+        <span class="tag">ইংরেজি</span>
+      </div>
+      <div class="worker-footer">
+        <div>
+          <div class="worker-rate">₹৩০০/ঘণ্টা</div>
+          <div class="worker-location">📍 দিল্লি</div>
+        </div>
+        <button class="btn-hire" onclick="alert('প্রিয়া শর্মাকে হায়ার করার জন্য প্রথমে লগইন করুন')">হায়ার করুন</button>
+      </div>
+    </div>
+
+    <!-- Worker 4 -->
+    <div class="worker-card">
+      <div class="worker-top">
+        <div class="worker-avatar" style="background:#fdf4ff;color:#7e22ce;">মো</div>
+        <div class="worker-info">
+          <div class="worker-name">মোহাম্মদ আরিফ</div>
+          <div class="worker-job">কার্পেন্টার · ১০ বছরের অভিজ্ঞতা</div>
+          <span class="worker-verified">✓ যাচাইকৃত</span>
+        </div>
+      </div>
+      <div class="worker-rating">
+        <span class="stars">★★★★☆</span>
+        <strong>4.7</strong>
+        <span class="rating-count">(১৫৬ রিভিউ)</span>
+      </div>
+      <div class="worker-tags">
+        <span class="tag">আসবাব তৈরি</span>
+        <span class="tag">দরজা-জানালা</span>
+        <span class="tag">রিপেয়ার</span>
+      </div>
+      <div class="worker-footer">
+        <div>
+          <div class="worker-rate">₹৫০০/ঘণ্টা</div>
+          <div class="worker-location">📍 মুম্বাই</div>
+        </div>
+        <button class="btn-hire" onclick="alert('মোহাম্মদ আরিফকে হায়ার করার জন্য প্রথমে লগইন করুন')">হায়ার করুন</button>
+      </div>
+    </div>
+
+    <!-- Worker 5 -->
+    <div class="worker-card">
+      <div class="worker-top">
+        <div class="worker-avatar" style="background:#fef9c3;color:#854d0e;">লক্ষ</div>
+        <div class="worker-info">
+          <div class="worker-name">লক্ষ্মী দেবী</div>
+          <div class="worker-job">ক্লিনার · ৬ বছরের অভিজ্ঞতা</div>
+          <span class="worker-verified">✓ যাচাইকৃত</span>
+        </div>
+      </div>
+      <div class="worker-rating">
+        <span class="stars">★★★★★</span>
+        <strong>4.9</strong>
+        <span class="rating-count">(২৪২ রিভিউ)</span>
+      </div>
+      <div class="worker-tags">
+        <span class="tag">ডিপ ক্লিনিং</span>
+        <span class="tag">রান্নাঘর</span>
+        <span class="tag">বাথরুম</span>
+      </div>
+      <div class="worker-footer">
+        <div>
+          <div class="worker-rate">₹২৫০/ঘণ্টা</div>
+          <div class="worker-location">📍 বেঙ্গালুরু</div>
+        </div>
+        <button class="btn-hire" onclick="alert('লক্ষ্মী দেবীকে হায়ার করার জন্য প্রথমে লগইন করুন')">হায়ার করুন</button>
+      </div>
+    </div>
+
+    <!-- Worker 6 -->
+    <div class="worker-card">
+      <div class="worker-top">
+        <div class="worker-avatar" style="background:#fce7f3;color:#9d174d;">অজ</div>
+        <div class="worker-info">
+          <div class="worker-name">অজয় মেহতা</div>
+          <div class="worker-job">পেইন্টার · ৯ বছরের অভিজ্ঞতা</div>
+          <span class="worker-verified">✓ যাচাইকৃত</span>
+        </div>
+      </div>
+      <div class="worker-rating">
+        <span class="stars">★★★★☆</span>
+        <strong>4.6</strong>
+        <span class="rating-count">(৯৮ রিভিউ)</span>
+      </div>
+      <div class="worker-tags">
+        <span class="tag">ইন্টেরিয়র</span>
+        <span class="tag">এক্সটেরিয়র</span>
+        <span class="tag">টেক্সচার</span>
+      </div>
+      <div class="worker-footer">
+        <div>
+          <div class="worker-rate">₹৪৫০/ঘণ্টা</div>
+          <div class="worker-location">📍 হায়দ্রাবাদ</div>
+        </div>
+        <button class="btn-hire" onclick="alert('অজয় মেহতাকে হায়ার করার জন্য প্রথমে লগইন করুন')">হায়ার করুন</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="how-inner">
+    <div style="text-align:center">
+      <div class="section-title">কিভাবে কাজ করে</div>
+      <div class="section-sub">মাত্র ৩টি সহজ ধাপে আপনার কর্মী খুঁজে নিন</div>
+    </div>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="step-num">১</div>
+        <h3>OTP দিয়ে লগইন</h3>
+        <p>আপনার মোবাইল নম্বর দিন, OTP পাবেন এবং সাথে সাথে লগইন করুন — কোনো পাসওয়ার্ড দরকার নেই।</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">২</div>
+        <h3>কর্মী খুঁজুন</h3>
+        <p>কাজের ধরন এবং আপনার এলাকা বেছে নিন, রেটিং ও রিভিউ দেখে সেরা কর্মীটি বেছে নিন।</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">৩</div>
+        <h3>বুকিং করুন</h3>
+        <p>সরাসরি কর্মীর সাথে যোগাযোগ করুন, সময় ঠিক করুন এবং কাজ হয়ে গেলে রেটিং দিন।</p>
+      </div>
+      <div class="how-step">
+        <div class="step-num">৪</div>
+        <h3>নিরাপদে পেমেন্ট</h3>
+        <p>UPI, নেট ব্যাংকিং বা ক্যাশ — যেকোনো উপায়ে পেমেন্ট করুন। কাজ সম্পূর্ণ হলেই পেমেন্ট।</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OTP LOGIN SECTION -->
+<section class="login-section" id="login">
+  <div class="login-card">
+    <div style="font-size:2.5rem;margin-bottom:0.5rem;">🔐</div>
+    <h2>লগইন / রেজিস্ট্রেশন</h2>
+    <p>আপনার মোবাইল নম্বরে OTP পাঠানো হবে</p>
+
+    <div class="tabs">
+      <button class="tab active">👤 ব্যবহারকারী</button>
+      <button class="tab" onclick="this.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">🔧 কর্মী</button>
+    </div>
+
+    <div id="phone-step">
+      <div class="phone-input-group">
+        <div class="country-code">🇮🇳 +91</div>
+        <input class="phone-input" type="tel" id="phone-number" placeholder="মোবাইল নম্বর লিখুন" maxlength="10">
+      </div>
+      <button class="btn-full" onclick="sendOTP()">OTP পাঠান →</button>
+      <div class="login-divider">অথবা</div>
+      <button style="width:100%;background:white;border:1px solid var(--border);padding:11px;border-radius:8px;font-size:0.9rem;cursor:pointer;font-family:inherit;color:var(--text-mid);">📧 ইমেইল দিয়ে লগইন</button>
+      <div id="recaptcha-container"></div>
+    </div>
+
+    <div id="otp-step">
+      <p style="color:var(--text-mid);font-size:0.875rem;margin-bottom:1rem;">
+        +91 <span id="display-phone" style="font-weight:600;"></span> নম্বরে OTP পাঠানো হয়েছে
+      </p>
+      <div class="otp-row">
+        <input class="otp-box" type="text" maxlength="1" id="otp1" oninput="moveNext(this,'otp2')">
+        <input class="otp-box" type="text" maxlength="1" id="otp2" oninput="moveNext(this,'otp3')">
+        <input class="otp-box" type="text" maxlength="1" id="otp3" oninput="moveNext(this,'otp4')">
+        <input class="otp-box" type="text" maxlength="1" id="otp4" oninput="moveNext(this,'otp5')">
+        <input class="otp-box" type="text" maxlength="1" id="otp5" oninput="moveNext(this,'otp6')">
+        <input class="otp-box" type="text" maxlength="1" id="otp6">
+      </div>
+      <button class="btn-full" onclick="verifyOTP()">যাচাই করুন ✓</button>
+      <button style="background:none;border:none;color:var(--orange);cursor:pointer;font-size:0.875rem;font-weight:600;" onclick="resendOTP()">পুনরায় OTP পাঠান</button>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="test-inner">
+    <div class="section-title">গ্রাহকরা কী বলছেন</div>
+    <div class="section-sub">হাজারো সন্তুষ্ট গ্রাহকের অভিজ্ঞতা</div>
+    <div class="test-grid">
+      <div class="test-card">
+        <div class="test-stars">★★★★★</div>
+        <p class="test-text">"রামেশ্বর দাস খুব দ্রুত এসে আমার বাথরুমের লিক ঠিক করে দিল। দাম যুক্তিসঙ্গত এবং কাজও পরিষ্কার। এই অ্যাপ ছাড়া এত ভালো প্লাম্বার পেতাম না।"</p>
+        <div class="test-author">
+          <div class="test-avatar">অ</div>
+          <div>
+            <div class="test-name">অনিতা বর্মা</div>
+            <div class="test-loc">📍 জয়পুর</div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-stars">★★★★★</div>
+        <p class="test-text">"OTP দিয়ে লগইন করা খুবই সহজ। দুই মিনিটে অ্যাকাউন্ট খুলে পাঁচ মিনিটের মধ্যে একজন ইলেকট্রিশিয়ান বুক করে ফেললাম। অসাধারণ সুবিধা!"</p>
+        <div class="test-author">
+          <div class="test-avatar">বি</div>
+          <div>
+            <div class="test-name">বিক্রম সিং</div>
+            <div class="test-loc">📍 দিল্লি</div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-stars">★★★★★</div>
+        <p class="test-text">"কর্মী হিসেবে এই প্ল্যাটফর্মে যোগ দেওয়ার পর থেকে আমার আয় তিনগুণ হয়ে গেছে। প্রতি মাসে ৫০+ নতুন কাজ পাচ্ছি।"</p>
+        <div class="test-author">
+          <div class="test-avatar">স</div>
+          <div>
+            <div class="test-name">সুরেশ কুমার</div>
+            <div class="test-loc">📍 মুম্বাই (কর্মী)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section">
+  <h2>আজই <em>কাজের সাথী</em>-তে যোগ দিন</h2>
+  <p>ব্যবহারকারী বা কর্মী — যেই হোন না কেন, আমরা আপনার পাশে আছি।</p>
+  <div class="cta-btns">
+    <a href="#login" class="btn-hero">কর্মী খুঁজুন</a>
+    <a href="#login" class="btn-hero-outline">কর্মী হিসেবে যোগ দিন</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="logo" href="#">🔧 কাজেরসাথী</a>
+      <p>ভারতের সবচেয়ে বিশ্বস্ত লোকাল ওয়ার্কার ফাইন্ডার প্ল্যাটফর্ম। দক্ষ ও যাচাইকৃত কর্মী, আপনার দরজায়।</p>
+    </div>
+    <div class="footer-col">
+      <h4>পরিষেবা</h4>
+      <ul>
+        <li><a href="#">প্লাম্বিং</a></li>
+        <li><a href="#">ইলেকট্রিক্যাল</a></li>
+        <li><a href="#">কার্পেন্ট্রি</a></li>
+        <li><a href="#">পেইন্টিং</a></li>
+        <li><a href="#">ক্লিনিং</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>কোম্পানি</h4>
+      <ul>
+        <li><a href="#">আমাদের সম্পর্কে</a></li>
+        <li><a href="#">ক্যারিয়ার</a></li>
+        <li><a href="#">ব্লগ</a></li>
+        <li><a href="#">প্রেস</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>সহায়তা</h4>
+      <ul>
+        <li><a href="#">সাহায্য কেন্দ্র</a></li>
+        <li><a href="#">গোপনীয়তা নীতি</a></li>
+        <li><a href="#">শর্তাবলী</a></li>
+        <li><a href="#">যোগাযোগ</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© ২০২৪ কাজের সাথী। সর্বস্বত্ব সংরক্ষিত।</span>
+    <span>🇮🇳 ভারতে তৈরি</span>
+  </div>
+</footer>
+
+<script>
+  function sendOTP() {
+    const phone = document.getElementById('phone-number').value.trim();
+    if (phone.length !== 10 || isNaN(phone)) {
+      alert('সঠিক ১০ সংখ্যার মোবাইল নম্বর লিখুন');
+      return;
+    }
+    document.getElementById('display-phone').textContent = phone;
+    document.getElementById('phone-step').classList.add('hide');
+    document.getElementById('otp-step').classList.add('show');
+    document.getElementById('otp1').focus();
+    alert('OTP পাঠানো হয়েছে (ডেমো: Firebase integration প্রয়োজন)');
+  }
+
+  function verifyOTP() {
+    const otp = ['otp1','otp2','otp3','otp4','otp5','otp6']
+      .map(id => document.getElementById(id).value).join('');
+    if (otp.length < 6) {
+      alert('৬ সংখ্যার OTP সম্পূর্ণ দিন');
+      return;
+    }
+    alert('OTP যাচাই সফল! (ডেমো) — আসল অ্যাপে Firebase verifyOTP() কল হবে');
+  }
+
+  function resendOTP() {
+    ['otp1','otp2','otp3','otp4','otp5','otp6'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('otp1').focus();
+    alert('OTP পুনরায় পাঠানো হয়েছে');
+  }
+
+  function moveNext(current, nextId) {
+    if (current.value.length === 1) {
+      const next = document.getElementById(nextId);
+      if (next) next.focus();
+    }
+  }
+
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
