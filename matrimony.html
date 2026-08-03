@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>পাত্র পাত্রী সন্ধান — কাজের সাথী</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --orange: #f97316;
+    --orange-dark: #ea580c;
+    --orange-deeper: #c2410c;
+    --orange-light: #fff7ed;
+    --orange-mid: #ffedd5;
+    --text: #1c1917;
+    --text-mid: #44403c;
+    --text-muted: #78716c;
+    --border: #e7e5e4;
+    --white: #ffffff;
+    --bg: #fafaf9;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
+  }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+  nav { background: var(--white); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; padding: 0 1.5rem; }
+  .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 1.3rem; color: var(--orange); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+  .logo span { color: var(--text); }
+  .back-link { text-decoration: none; color: var(--text-mid); font-size: 0.9rem; font-weight: 600; }
+  .back-link:hover { color: var(--orange); }
+
+  .hero { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fed7aa 100%); padding: 3.5rem 1.5rem 3rem; text-align: center; }
+  .hero-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+  .hero h1 { font-family: 'Poppins', sans-serif; font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 800; color: var(--text); line-height: 1.15; max-width: 720px; margin: 0 auto 0.75rem; }
+  .hero h1 em { font-style: normal; color: var(--orange); }
+  .hero p { font-size: 1rem; color: var(--text-mid); max-width: 540px; margin: 0 auto; }
+
+  /* SEARCH */
+  .search-section {
+    padding: 2rem 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .search-box {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .search-box select {
+    flex: 1;
+    min-width: 160px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    outline: none;
+  }
+  .search-box select:focus { border-color: var(--orange); }
+  .search-box select:disabled { opacity: 0.6; cursor: not-allowed; }
+  .search-box button {
+    background: var(--orange);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .search-box button:hover { background: var(--orange-dark); }
+  .search-result-msg {
+    margin-top: 0.9rem;
+    background: var(--orange-light);
+    border: 1px solid var(--orange-mid);
+    border-radius: 10px;
+    padding: 0.8rem 1.1rem;
+    font-size: 0.88rem;
+    color: var(--text-mid);
+    display: none;
+  }
+  .search-result-msg strong { color: var(--orange-deeper); }
+
+  /* PROFILE GRID */
+  .profiles-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 4rem;
+  }
+  .section-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  .section-sub {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.75rem;
+  }
+  .profiles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.25rem;
+  }
+  .profile-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.2s, transform 0.15s;
+  }
+  .profile-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .profile-photo-wrap { position: relative; width: 100%; height: 220px; background: var(--orange-light); }
+  .profile-photo {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    background: var(--orange-light);
+    display: block;
+  }
+  .profile-icon-fallback {
+    width: 100%;
+    height: 220px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .profile-icon-fallback svg { width: 55%; height: 55%; max-width: 140px; max-height: 140px; }
+  .profile-icon-fallback.male-icon { background: #eff6ff; color: #1d4ed8; }
+  .profile-icon-fallback.female-icon { background: #fce7f3; color: #9d174d; }
+  .profile-body { padding: 1rem 1.1rem 1.1rem; }
+  .profile-name-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .profile-name { font-weight: 700; font-size: 1.02rem; }
+  .profile-type-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 99px;
+  }
+  .profile-type-badge.groom { background: #eff6ff; color: #1d4ed8; }
+  .profile-type-badge.bride { background: #fce7f3; color: #9d174d; }
+  .profile-detail { font-size: 0.82rem; color: var(--text-mid); margin-bottom: 2px; }
+  .profile-location { font-size: 0.8rem; color: var(--text-muted); margin: 6px 0 12px; }
+  .profile-actions { display: flex; gap: 8px; }
+  .profile-actions a {
+    flex: 1;
+    text-align: center;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 8px 6px;
+    border-radius: 8px;
+  }
+  .btn-call { background: var(--orange); color: white; }
+  .btn-call:hover { background: var(--orange-dark); }
+  .btn-telegram { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+  .btn-telegram:hover { background: #dbeafe; }
+
+  .no-results {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 2rem;
+    display: none;
+  }
+
+  footer { text-align: center; padding: 2rem 1.5rem; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="index.html">🔧 কাজের<span>সাথী</span></a>
+    <a class="back-link" href="index.html">← হোমে ফিরে যান</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-icon">💍</div>
+  <h1>পাত্র পাত্রী <em>সন্ধান</em></h1>
+  <p>বিশ্বস্ত ও যাচাইকৃত প্রোফাইলের মাধ্যমে আপনার জীবনসঙ্গী খুঁজে নিন।</p>
+</section>
+
+<!-- SEARCH -->
+<section class="search-section">
+  <div class="search-box">
+    <select id="want-type">
+      <option value="">কী খুঁজছেন?</option>
+      <option value="পাত্রী">পাত্রী চাই</option>
+      <option value="পাত্র">পাত্র চাই</option>
+    </select>
+    <select id="m-district" onchange="populateSubdivisions()">
+      <option value="">জেলা বেছে নিন</option>
+    </select>
+    <select id="m-subdivision" disabled>
+      <option value="">প্রথমে জেলা বেছে নিন</option>
+    </select>
+    <button onclick="filterProfiles()">🔍 সার্চ করুন</button>
+  </div>
+  <div id="search-result-msg" class="search-result-msg"></div>
+</section>
+
+<!-- PROFILES -->
+<section class="profiles-section">
+  <div class="section-title">প্রোফাইলসমূহ</div>
+  <div class="section-sub">উপরে সার্চ করে নির্দিষ্ট এলাকার পাত্র/পাত্রী খুঁজুন, অথবা নিচে সব প্রোফাইল দেখুন</div>
+
+  <div class="profiles-grid" id="profiles-grid">
+
+    <!-- ============================================================
+         নতুন প্রোফাইল যোগ করার নিয়ম (এই কমেন্টটি পেজে দেখা যাবে না):
+
+         নিচের একটি <div class="profile-card">...</div> ব্লক কপি করে
+         এই grid-এর ভিতরে (অন্য কার্ডগুলোর সাথে) পেস্ট করুন এবং তথ্য বদলে দিন।
+
+         data-type          = "পাত্র" অথবা "পাত্রী" (হুবহু এই বানানে লিখতে হবে)
+         data-district      = ঠিক dropdown-এ থাকা জেলার নামের মতো লিখতে হবে
+                               (যেমন: "হাওড়া", "উত্তর ২৪ পরগনা", "কলকাতা")
+         data-subdivision   = ওই জেলার আসল সাব-ডিভিশনের নাম
+                               (যেমন: হাওড়া জেলার ক্ষেত্রে "হাওড়া সদর" বা "উলুবেড়িয়া")
+
+         এই তিনটে attribute ঠিকমতো বসালে সার্চ ফিল্টার ঠিকমতো কাজ করবে।
+
+         ছবি: <div class="profile-photo-wrap"> এর ভিতরে <img class="profile-photo" ...> রাখুন
+         এবং src= এ নিজের আপলোড করা ছবির লিঙ্ক / ফাইল পাথ বসান।
+         *** কারো ছবি না থাকলে src="" খালি রেখে দিন — সাইট automatically
+             পাত্রীর জন্য মহিলা আইকন আর পাত্রের জন্য পুরুষ আইকন দেখিয়ে দেবে। ***
+         (ছবি লোড করতে ব্যর্থ হলেও একই আইকন এমনিতেই দেখা যাবে)
+
+         মোবাইল নম্বরের জন্য: href="tel:+91XXXXXXXXXX"
+         টেলিগ্রামের জন্য:   href="https://t.me/আপনার_ইউজারনেম"
+    ============================================================= -->
+
+    <!-- Profile 1 -->
+    <div class="profile-card" data-type="পাত্রী" data-district="হাওড়া" data-subdivision="হাওড়া সদর">
+      <div class="profile-photo-wrap">
+        <img class="profile-photo" src="" alt="প্রোফাইল ছবি" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="profile-icon-fallback female-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8v1H4v-1z"/></svg>
+        </div>
+      </div>
+      <div class="profile-body">
+        <div class="profile-name-row">
+          <span class="profile-name">প্রিয়াঙ্কা দাস, ২৬</span>
+          <span class="profile-type-badge bride">পাত্রী</span>
+        </div>
+        <div class="profile-detail">শিক্ষকতা · উচ্চতা ৫'৪" · হিন্দু, ব্রাহ্মণ</div>
+        <div class="profile-detail">শিক্ষাগত যোগ্যতা: এম.এ (বাংলা)</div>
+        <div class="profile-location">📍 হাওড়া সদর, হাওড়া</div>
+        <div class="profile-actions">
+          <a class="btn-call" href="tel:+919800000001">📞 কল করুন</a>
+          <a class="btn-telegram" href="https://t.me/example_user1" target="_blank">✈️ টেলিগ্রাম</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile 2 -->
+    <div class="profile-card" data-type="পাত্র" data-district="উত্তর ২৪ পরগনা" data-subdivision="বারাসাত সদর">
+      <div class="profile-photo-wrap">
+        <img class="profile-photo" src="" alt="প্রোফাইল ছবি" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="profile-icon-fallback male-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8v1H4v-1z"/></svg>
+        </div>
+      </div>
+      <div class="profile-body">
+        <div class="profile-name-row">
+          <span class="profile-name">সৌরভ মণ্ডল, ৩০</span>
+          <span class="profile-type-badge groom">পাত্র</span>
+        </div>
+        <div class="profile-detail">সরকারি চাকুরিজীবী · উচ্চতা ৫'৯" · হিন্দু</div>
+        <div class="profile-detail">শিক্ষাগত যোগ্যতা: বি.টেক (সিভিল)</div>
+        <div class="profile-location">📍 বারাসাত সদর, উত্তর ২৪ পরগনা</div>
+        <div class="profile-actions">
+          <a class="btn-call" href="tel:+919800000002">📞 কল করুন</a>
+          <a class="btn-telegram" href="https://t.me/example_user2" target="_blank">✈️ টেলিগ্রাম</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile 3 -->
+    <div class="profile-card" data-type="পাত্রী" data-district="কলকাতা" data-subdivision="কলকাতা">
+      <div class="profile-photo-wrap">
+        <img class="profile-photo" src="" alt="প্রোফাইল ছবি" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="profile-icon-fallback female-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8v1H4v-1z"/></svg>
+        </div>
+      </div>
+      <div class="profile-body">
+        <div class="profile-name-row">
+          <span class="profile-name">অনন্যা সেন, ২৮</span>
+          <span class="profile-type-badge bride">পাত্রী</span>
+        </div>
+        <div class="profile-detail">সফটওয়্যার ইঞ্জিনিয়ার · উচ্চতা ৫'৫" · হিন্দু, কায়স্থ</div>
+        <div class="profile-detail">শিক্ষাগত যোগ্যতা: বি.টেক (সিএসই)</div>
+        <div class="profile-location">📍 কলকাতা</div>
+        <div class="profile-actions">
+          <a class="btn-call" href="tel:+919800000003">📞 কল করুন</a>
+          <a class="btn-telegram" href="https://t.me/example_user3" target="_blank">✈️ টেলিগ্রাম</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile 4 -->
+    <div class="profile-card" data-type="পাত্র" data-district="পশ্চিম বর্ধমান" data-subdivision="আসানসোল সদর">
+      <div class="profile-photo-wrap">
+        <img class="profile-photo" src="" alt="প্রোফাইল ছবি" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="profile-icon-fallback male-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8v1H4v-1z"/></svg>
+        </div>
+      </div>
+      <div class="profile-body">
+        <div class="profile-name-row">
+          <span class="profile-name">অভিজিৎ রায়, ৩২</span>
+          <span class="profile-type-badge groom">পাত্র</span>
+        </div>
+        <div class="profile-detail">ব্যবসায়ী · উচ্চতা ৫'৮" · হিন্দু</div>
+        <div class="profile-detail">শিক্ষাগত যোগ্যতা: বি.কম</div>
+        <div class="profile-location">📍 আসানসোল সদর, পশ্চিম বর্ধমান</div>
+        <div class="profile-actions">
+          <a class="btn-call" href="tel:+919800000004">📞 কল করুন</a>
+          <a class="btn-telegram" href="https://t.me/example_user4" target="_blank">✈️ টেলিগ্রাম</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="no-results" id="no-results">এই মুহূর্তে এই এলাকায় / এই ধরনের কোনো প্রোফাইল পাওয়া যায়নি।</div>
+</section>
+
+<footer>
+  © ২০২৪ কাজের সাথী। সর্বস্বত্ব সংরক্ষিত।
+</footer>
+
+<script>
+  const wbDistricts = {
+    "আলিপুরদুয়ার": ["আলিপুরদুয়ার"],
+    "বাঁকুড়া": ["বাঁকুড়া সদর", "বিষ্ণুপুর", "খাতড়া"],
+    "বীরভূম": ["বোলপুর", "রামপুরহাট", "সিউড়ি সদর"],
+    "কোচবিহার": ["কোচবিহার সদর", "দিনহাটা", "মাথাভাঙ্গা", "মেখলিগঞ্জ", "তুফানগঞ্জ"],
+    "দক্ষিণ দিনাজপুর": ["বালুরঘাট", "গঙ্গারামপুর"],
+    "দার্জিলিং": ["দার্জিলিং সদর", "কার্শিয়াং", "মিরিক", "শিলিগুড়ি"],
+    "হুগলি": ["আরামবাগ", "চন্দননগর", "চুঁচুড়া সদর", "শ্রীরামপুর"],
+    "হাওড়া": ["হাওড়া সদর", "উলুবেড়িয়া"],
+    "জলপাইগুড়ি": ["জলপাইগুড়ি সদর", "মালবাজার", "ধূপগুড়ি"],
+    "ঝাড়গ্রাম": ["ঝাড়গ্রাম"],
+    "কালিম্পং": ["কালিম্পং"],
+    "কলকাতা": ["কলকাতা"],
+    "মালদা": ["চাঁচল", "মালদা সদর"],
+    "মুর্শিদাবাদ": ["বহরমপুর", "ডোমকল", "জঙ্গিপুর", "কান্দি", "লালবাগ"],
+    "নদিয়া": ["কল্যাণী", "কৃষ্ণনগর সদর", "রানাঘাট", "তেহট্ট"],
+    "উত্তর ২৪ পরগনা": ["বনগাঁ", "বারাসাত সদর", "ব্যারাকপুর", "বসিরহাট", "বিধাননগর"],
+    "পশ্চিম বর্ধমান": ["আসানসোল সদর", "দুর্গাপুর"],
+    "পশ্চিম মেদিনীপুর": ["মেদিনীপুর সদর", "খড়্গপুর", "ঘাটাল"],
+    "পূর্ব বর্ধমান": ["বর্ধমান সদর উত্তর", "বর্ধমান সদর দক্ষিণ", "কালনা", "কাটোয়া"],
+    "পূর্ব মেদিনীপুর": ["তমলুক", "হলদিয়া", "এগরা", "কাঁথি"],
+    "পুরুলিয়া": ["পুরুলিয়া সদর", "মানবাজার", "ঝালদা", "রঘুনাথপুর"],
+    "দক্ষিণ ২৪ পরগনা": ["আলিপুর সদর", "বারুইপুর", "ক্যানিং", "ডায়মন্ড হারবার", "কাকদ্বীপ"],
+    "উত্তর দিনাজপুর": ["রায়গঞ্জ", "ইসলামপুর"]
+  };
+
+  function initDistricts() {
+    const districtSelect = document.getElementById('m-district');
+    Object.keys(wbDistricts).forEach(district => {
+      const opt = document.createElement('option');
+      opt.value = district;
+      opt.textContent = district;
+      districtSelect.appendChild(opt);
+    });
+  }
+
+  function populateSubdivisions() {
+    const district = document.getElementById('m-district').value;
+    const subSelect = document.getElementById('m-subdivision');
+    subSelect.innerHTML = '';
+    if (!district) {
+      subSelect.disabled = true;
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'প্রথমে জেলা বেছে নিন';
+      subSelect.appendChild(opt);
+      return;
+    }
+    subSelect.disabled = false;
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = '';
+    defaultOpt.textContent = 'সাব-ডিভিশন বেছে নিন (ঐচ্ছিক)';
+    subSelect.appendChild(defaultOpt);
+    wbDistricts[district].forEach(sub => {
+      const opt = document.createElement('option');
+      opt.value = sub;
+      opt.textContent = sub;
+      subSelect.appendChild(opt);
+    });
+  }
+
+  function filterProfiles() {
+    const type = document.getElementById('want-type').value;
+    const district = document.getElementById('m-district').value;
+    const subdivision = document.getElementById('m-subdivision').value;
+    const cards = document.querySelectorAll('.profile-card');
+    const msgBox = document.getElementById('search-result-msg');
+    const noResults = document.getElementById('no-results');
+
+    let visibleCount = 0;
+    cards.forEach(card => {
+      const matchesType = !type || card.dataset.type === type;
+      const matchesDistrict = !district || card.dataset.district === district;
+      const matchesSub = !subdivision || card.dataset.subdivision === subdivision;
+      if (matchesType && matchesDistrict && matchesSub) {
+        card.style.display = '';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+
+    let areaText = district ? (subdivision ? subdivision + ', ' + district : district) : 'সব এলাকা';
+    let typeText = type || 'পাত্র ও পাত্রী উভয়';
+    msgBox.style.display = 'block';
+    msgBox.innerHTML = areaText + ' এলাকায় <strong>' + typeText + '</strong> — মোট <strong>' + visibleCount + 'টি</strong> প্রোফাইল পাওয়া গেছে।';
+  }
+
+  function initProfilePhotos() {
+    document.querySelectorAll('.profile-photo-wrap').forEach(wrap => {
+      const img = wrap.querySelector('img.profile-photo');
+      const fallback = wrap.querySelector('.profile-icon-fallback');
+      const src = img.getAttribute('src');
+      if (!src || src.trim() === '') {
+        img.style.display = 'none';
+        fallback.style.display = 'flex';
+      }
+    });
+  }
+
+  initDistricts();
+  initProfilePhotos();
+</script>
+
+</body>
+</html>
