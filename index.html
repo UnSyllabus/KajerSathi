@@ -259,6 +259,19 @@
     white-space: nowrap;
   }
   .search-box button:hover { background: var(--orange-dark); }
+  .search-result {
+    max-width: 800px;
+    margin: 1rem auto 0;
+  }
+  .search-result-msg {
+    background: var(--orange-light);
+    border: 1px solid var(--orange-mid);
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.9rem;
+    color: var(--text-mid);
+  }
+  .search-result-msg strong { color: var(--orange-deeper); }
 
   /* CATEGORIES */
   .categories {
@@ -312,6 +325,38 @@
     font-size: 0.72rem;
     color: var(--text-muted);
     margin-top: 2px;
+  }
+
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+  }
+  .quick-card {
+    background: linear-gradient(135deg, var(--orange-light) 0%, var(--white) 100%);
+    border: 1.5px solid var(--orange-mid);
+    border-radius: var(--radius);
+    padding: 1.75rem 1.25rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    text-decoration: none;
+    display: block;
+  }
+  .quick-card:hover {
+    border-color: var(--orange);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+  }
+  .quick-icon {
+    font-size: 2.4rem;
+    display: block;
+    margin-bottom: 0.6rem;
+  }
+  .quick-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
   }
 
   /* WORKERS */
@@ -666,44 +711,11 @@
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-badge">🇮🇳 ভারতে ১০,০০০+ কর্মী</div>
-  <h1>বিশ্বস্ত <em>লোকাল কর্মী</em> খুঁজুন মাত্র কয়েক মিনিটে</h1>
-  <p>প্লাম্বার, ইলেকট্রিশিয়ান, মিস্ত্রি — আপনার কাছের যে কোনো দক্ষ কর্মী এখন আপনার হাতের মুঠোয়। OTP দিয়ে সহজে লগইন করুন।</p>
-  <div class="hero-actions">
-    <a href="#workers" class="btn-hero">এখনই কর্মী খুঁজুন →</a>
-    <a href="#login" class="btn-hero-outline">কর্মী হিসেবে যোগ দিন</a>
-  </div>
-</section>
-
-<!-- STATS -->
-<section class="stats">
-  <div class="stats-grid">
-    <div>
-      <div class="stat-num">১০,০০০+</div>
-      <div class="stat-label">যাচাইকৃত কর্মী</div>
-    </div>
-    <div>
-      <div class="stat-num">৫০+</div>
-      <div class="stat-label">শহর জুড়ে পরিষেবা</div>
-    </div>
-    <div>
-      <div class="stat-num">৯৮%</div>
-      <div class="stat-label">সন্তুষ্ট গ্রাহক</div>
-    </div>
-    <div>
-      <div class="stat-num">৪.৮ ★</div>
-      <div class="stat-label">গড় রেটিং</div>
-    </div>
-  </div>
-</section>
-
 <!-- SEARCH -->
 <section class="search-section">
   <h2>কাজের ধরন ও এলাকা বেছে নিন</h2>
   <div class="search-box">
-    <select>
+    <select id="job-type">
       <option>কাজের ধরন বেছে নিন</option>
       <option>প্লাম্বার</option>
       <option>ইলেকট্রিশিয়ান</option>
@@ -714,8 +726,123 @@
       <option>গৃহশিক্ষক</option>
       <option>রান্নাঘর সহায়ক</option>
     </select>
-    <input type="text" placeholder="আপনার এলাকা লিখুন... যেমন: ঢাকা, কলকাতা">
-    <button>🔍 খুঁজুন</button>
+    <select id="district-select" onchange="populateSubdivisions()">
+      <option value="">জেলা বেছে নিন</option>
+    </select>
+    <select id="subdivision-select" disabled>
+      <option value="">প্রথমে জেলা বেছে নিন</option>
+    </select>
+    <button onclick="runSearch()">🔍 খুঁজুন</button>
+  </div>
+  <div id="search-result" class="search-result"></div>
+</section>
+
+<script>
+  const wbDistricts = {
+    "আলিপুরদুয়ার": ["আলিপুরদুয়ার"],
+    "বাঁকুড়া": ["বাঁকুড়া সদর", "বিষ্ণুপুর", "খাতড়া"],
+    "বীরভূম": ["বোলপুর", "রামপুরহাট", "সিউড়ি সদর"],
+    "কোচবিহার": ["কোচবিহার সদর", "দিনহাটা", "মাথাভাঙ্গা", "মেখলিগঞ্জ", "তুফানগঞ্জ"],
+    "দক্ষিণ দিনাজপুর": ["বালুরঘাট", "গঙ্গারামপুর"],
+    "দার্জিলিং": ["দার্জিলিং সদর", "কার্শিয়াং", "মিরিক", "শিলিগুড়ি"],
+    "হুগলি": ["আরামবাগ", "চন্দননগর", "চুঁচুড়া সদর", "শ্রীরামপুর"],
+    "হাওড়া": ["হাওড়া সদর", "উলুবেড়িয়া"],
+    "জলপাইগুড়ি": ["জলপাইগুড়ি সদর", "মালবাজার", "ধূপগুড়ি"],
+    "ঝাড়গ্রাম": ["ঝাড়গ্রাম"],
+    "কালিম্পং": ["কালিম্পং"],
+    "কলকাতা": ["কলকাতা"],
+    "মালদা": ["চাঁচল", "মালদা সদর"],
+    "মুর্শিদাবাদ": ["বহরমপুর", "ডোমকল", "জঙ্গিপুর", "কান্দি", "লালবাগ"],
+    "নদিয়া": ["কল্যাণী", "কৃষ্ণনগর সদর", "রানাঘাট", "তেহট্ট"],
+    "উত্তর ২৪ পরগনা": ["বনগাঁ", "বারাসাত সদর", "ব্যারাকপুর", "বসিরহাট", "বিধাননগর"],
+    "পশ্চিম বর্ধমান": ["আসানসোল সদর", "দুর্গাপুর"],
+    "পশ্চিম মেদিনীপুর": ["মেদিনীপুর সদর", "খড়্গপুর", "ঘাটাল"],
+    "পূর্ব বর্ধমান": ["বর্ধমান সদর উত্তর", "বর্ধমান সদর দক্ষিণ", "কালনা", "কাটোয়া"],
+    "পূর্ব মেদিনীপুর": ["তমলুক", "হলদিয়া", "এগরা", "কাঁথি"],
+    "পুরুলিয়া": ["পুরুলিয়া সদর", "মানবাজার", "ঝালদা", "রঘুনাথপুর"],
+    "দক্ষিণ ২৪ পরগনা": ["আলিপুর সদর", "বারুইপুর", "ক্যানিং", "ডায়মন্ড হারবার", "কাকদ্বীপ"],
+    "উত্তর দিনাজপুর": ["রায়গঞ্জ", "ইসলামপুর"]
+  };
+
+  function initDistricts() {
+    const districtSelect = document.getElementById('district-select');
+    Object.keys(wbDistricts).forEach(district => {
+      const opt = document.createElement('option');
+      opt.value = district;
+      opt.textContent = district;
+      districtSelect.appendChild(opt);
+    });
+  }
+
+  function populateSubdivisions() {
+    const district = document.getElementById('district-select').value;
+    const subSelect = document.getElementById('subdivision-select');
+    subSelect.innerHTML = '';
+    if (!district) {
+      subSelect.disabled = true;
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'প্রথমে জেলা বেছে নিন';
+      subSelect.appendChild(opt);
+      return;
+    }
+    subSelect.disabled = false;
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = '';
+    defaultOpt.textContent = 'সাব-ডিভিশন বেছে নিন';
+    subSelect.appendChild(defaultOpt);
+    wbDistricts[district].forEach(sub => {
+      const opt = document.createElement('option');
+      opt.value = sub;
+      opt.textContent = sub;
+      subSelect.appendChild(opt);
+    });
+  }
+
+  function runSearch() {
+    const job = document.getElementById('job-type').value;
+    const district = document.getElementById('district-select').value;
+    const sub = document.getElementById('subdivision-select').value;
+    const resultBox = document.getElementById('search-result');
+
+    if (!district) {
+      resultBox.innerHTML = '<p class="search-result-msg">অনুগ্রহ করে প্রথমে একটি জেলা বেছে নিন।</p>';
+      return;
+    }
+    if (!sub) {
+      resultBox.innerHTML = '<p class="search-result-msg">অনুগ্রহ করে একটি সাব-ডিভিশন বেছে নিন।</p>';
+      return;
+    }
+    const jobText = (job && job !== 'কাজের ধরন বেছে নিন') ? job : 'সব ধরনের কর্মী';
+    resultBox.innerHTML =
+      '<p class="search-result-msg">' + district + ', ' + sub + ' এলাকায় <strong>' + jobText + '</strong> খোঁজা হচ্ছে... নিচে "কাছের কর্মীরা" সেকশনে ফলাফল দেখুন।</p>';
+    document.getElementById('workers').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  initDistricts();
+</script>
+
+<!-- QUICK SERVICES -->
+<section class="categories" id="quick-services">
+  <div class="section-title">বিশেষ পরিষেবা</div>
+  <div class="section-sub">এক ক্লিকে পৌঁছে যান আপনার প্রয়োজনীয় পরিষেবায়</div>
+  <div class="quick-grid">
+    <a href="matrimony.html" class="quick-card">
+      <span class="quick-icon">💍</span>
+      <div class="quick-name">পাত্র পাত্রী সন্ধান</div>
+    </a>
+    <a href="lawyer.html" class="quick-card">
+      <span class="quick-icon">⚖️</span>
+      <div class="quick-name">উকিল খুঁজুন</div>
+    </a>
+    <a href="blood-donor.html" class="quick-card">
+      <span class="quick-icon">🩸</span>
+      <div class="quick-name">রক্ত দানকারী</div>
+    </a>
+    <a href="any-work.html" class="quick-card">
+      <span class="quick-icon">🛠️</span>
+      <div class="quick-name">যেকোনো কাজের দরকার</div>
+    </a>
   </div>
 </section>
 
@@ -1050,6 +1177,33 @@
   <div class="cta-btns">
     <a href="#login" class="btn-hero">কর্মী খুঁজুন</a>
     <a href="#login" class="btn-hero-outline">কর্মী হিসেবে যোগ দিন</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stats-grid">
+    <div>
+      <div class="hero-badge" style="margin-bottom:0.6rem;">🇮🇳 ভারতে ১০,০০০+ কর্মী</div>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div>
+      <div class="stat-num">১০,০০০+</div>
+      <div class="stat-label">যাচাইকৃত কর্মী</div>
+    </div>
+    <div>
+      <div class="stat-num">৫০+</div>
+      <div class="stat-label">শহর জুড়ে পরিষেবা</div>
+    </div>
+    <div>
+      <div class="stat-num">৯৮%</div>
+      <div class="stat-label">সন্তুষ্ট গ্রাহক</div>
+    </div>
+    <div>
+      <div class="stat-num">৪.৮ ★</div>
+      <div class="stat-label">গড় রেটিং</div>
+    </div>
   </div>
 </section>
 
